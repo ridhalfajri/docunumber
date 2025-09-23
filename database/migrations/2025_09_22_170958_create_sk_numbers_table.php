@@ -17,7 +17,10 @@ return new class extends Migration
             $table->date('date');
             $table->boolean('is_verified')->default(false);
             $table->timestamp('verified_at')->nullable();
+            $table->unsignedBigInteger('category_id');
+            $table->string('description');
             $table->timestamps();
+            $table->foreign('category_id')->references('id')->on('categories');
         });
     }
 

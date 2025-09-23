@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\SkNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -33,6 +34,9 @@ class SkNumberController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'date' => 'required|date|date_format:Y-m-d',
+            'is_sispk'    => 'required|boolean',
+            'category_id' => 'required_if:is_sispk,0|nullable|exists:categories,id',
+            'description'=>'required',
         ]);
 
         // Jika validasi gagal
@@ -47,11 +51,18 @@ class SkNumberController extends Controller
         $skCount = SkNumber::count();
         if ($skCount === 0) {
             $newSkFormat = '1/KEP/BSN/' . Carbon::now()->format('m') . '/' . Carbon::now()->format('Y');
-
+            if($request->is_sispk){
+                $category = Category::where('code','LAIN-LAIN')->first();
+                $categoryId = $category->id;
+            }else{
+                $categoryId = $request->category_id;
+            }
             $skNumber = new SkNumber();
             $skNumber->sk_number = $newSkFormat;
             $skNumber->date = Carbon::parse($request->date);
             $skNumber->is_verified = false;
+            $skNumber->category_id = $categoryId;
+            $skNumber->description = $request->description;
             $skNumber->save();
 
             return $this->successResponse(
@@ -101,11 +112,26 @@ class SkNumberController extends Controller
             }else{
                 $newSkFormat = $newFirstNumber . '/KEP/BSN/'.Carbon::now()->format('m').'/' . Carbon::now()->format('Y');
             }
+            if($request->is_sispk){
+                $category = Category::where('code','LAIN-LAIN')->first();
+                $categoryId = $category->id;
+            }else{
+                $categoryId = $request->category_id;
+            }
 
+            if($request->is_sispk){
+                $category = Category::where('code','LAIN-LAIN')->first();
+                $categoryId = $category->id;
+            }else{
+                $categoryId = $request->category_id;
+            }
             // Buat SK number baru
             $skNumber = new SkNumber();
             $skNumber->sk_number = $newSkFormat;
             $skNumber->date = Carbon::parse($request->date);
+            $skNumber->category_id = $categoryId;
+            $skNumber->description = $request->description;
+            $skNumber->category_id = $categoryId;
             $skNumber->is_verified = false;
             $skNumber->save();
 
@@ -149,11 +175,18 @@ class SkNumberController extends Controller
                     );
                 }
             }
-
+            if($request->is_sispk){
+                $category = Category::where('code','LAIN-LAIN')->first();
+                $categoryId = $category->id;
+            }else{
+                $categoryId = $request->category_id;
+            }
             // Buat SK number baru
             $skNumber = new SkNumber();
             $skNumber->sk_number = $newSkFormat;
             $skNumber->date = $backDate;
+            $skNumber->category_id = $categoryId;
+            $skNumber->description = $request->description;
             $skNumber->is_verified = false;
             $skNumber->save();
 
