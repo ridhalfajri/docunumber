@@ -16,7 +16,7 @@ class SkNumberController extends Controller
     {
         $skNumbers = SkNumber::orderBy('date', 'desc')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
 
         // Mengembalikan response sukses dengan data SkNumber yang sudah diurutkan
         return $this->successResponse(
