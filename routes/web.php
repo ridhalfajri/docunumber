@@ -16,3 +16,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('app');
 });
+Route::resource('sk_number', \App\Http\Controllers\SkNumberWebController::class)->names([
+    'index'   => 'sk.index',
+    'create'  => 'sk.create',
+    'store'   => 'sk.store',
+    'show'    => 'sk.show',
+    'edit'    => 'sk.edit',
+    'update'  => 'sk.update',
+    'destroy' => 'sk.destroy',
+]);

@@ -9,6 +9,12 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+    protected $baseUrl;
+
+    public function __construct()
+    {
+        $this->baseUrl = config('services.docunumber.base_url');
+    }
     protected function errorResponse($message, $details = null, $code = 500)
     {
         return response()->json([

@@ -43,7 +43,6 @@ class SkNumberController extends Controller
                 422
             );
         }
-
         //validate tanggal request sekarang atau bukan
         if ($request->date == Carbon::now()->format('Y-m-d')) {
             $dateNow = Carbon::parse($request->date);

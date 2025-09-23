@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Document Number SK</title>
-    <link rel="shortcut icon" type="image/png" href="./assets/images/logos/favicon.png" />
+    <link rel="shortcut icon" type="image/png" href="{{asset('assets/images/logos/favicon.png')}}" />
     <link rel="stylesheet" href="{{asset('assets/css/styles.min.css')}}" />
     @stack('style')
 </head>
@@ -19,7 +19,7 @@
     <div class="app-topstrip bg-dark py-6 px-3 w-100 d-lg-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center justify-content-center gap-5 mb-2 mb-lg-0">
             <a class="d-flex justify-content-center" href="#">
-                <img src="assets/images/logos/logo-wrappixel.svg" alt="" width="150">
+                <img src="{{asset('assets/images/logos/logo-wrappixel.svg')}}" alt="" width="150">
             </a>
 
 
@@ -31,7 +31,7 @@
         <div>
             <div class="brand-logo d-flex align-items-center justify-content-between">
                 <a href="./index.html" class="text-nowrap logo-img">
-                    <img src="assets/images/logos/logo.svg" alt="" />
+                    <img src="{{asset('assets/images/logos/logo.svg')}}" alt="" />
                 </a>
                 <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                     <i class="ti ti-x fs-6"></i>
@@ -82,6 +82,23 @@
                     <div class="col-lg-12">
                         <div class="card w-100">
                             <div class="card-body">
+                                @if(session('success'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ session('success') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+
+                                @if ($errors->any())
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <ul class="mb-0">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
                                 @yield('content')
                             </div>
                         </div>
