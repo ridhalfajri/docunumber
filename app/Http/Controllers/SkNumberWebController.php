@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -27,6 +28,7 @@ class SkNumberWebController extends Controller
             return view('sknumber.index', compact('skNumbers', 'pagination'));
         }
 
+
         return view('sknumber.index')->with('error', 'Gagal mengambil data dari API');
     }
 
@@ -35,7 +37,8 @@ class SkNumberWebController extends Controller
      */
     public function create()
     {
-        return view('sknumber.create');
+        $categories = Category::all();
+        return view('sknumber.create',compact('categories'));
     }
 
     /**

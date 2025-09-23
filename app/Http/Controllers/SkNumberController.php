@@ -15,7 +15,7 @@ class SkNumberController extends Controller
      */
     public function index()
     {
-        $skNumbers = SkNumber::orderBy('date', 'desc')
+        $skNumbers = SkNumber::with('category')->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -111,6 +111,14 @@ class SkNumberController extends Controller
                 $newSkFormat ='1/KEP/BSN/'.Carbon::now()->format('m').'/' . Carbon::now()->format('Y');
             }else{
                 $newSkFormat = $newFirstNumber . '/KEP/BSN/'.Carbon::now()->format('m').'/' . Carbon::now()->format('Y');
+            }
+            $isExist = SkNumber::where('sk_number', $newSkFormat)->first();
+            if ($isExist) {
+                return $this->errorResponse(
+                    "SK number already exist",
+                    null,
+                    400
+                );
             }
             if($request->is_sispk){
                 $category = Category::where('code','LAIN-LAIN')->first();

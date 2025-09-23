@@ -7,7 +7,8 @@
             <th scope="col">#</th>
             <th scope="col">Nomor SK</th>
             <th scope="col">Tanggal</th>
-{{--            <th scope="col">Virifikasi</th>--}}
+            <th scope="col">Kategori</th>
+            <th scope="col">Deskripsi</th>
 {{--            <th scope="col">Tanggal Verifikasi</th>--}}
             <th scope="col">#</th>
         </tr>
@@ -17,7 +18,9 @@
                 <tr>
                     <td>{{ $loop->iteration}}</td>
                     <td>{{ $sk['sk_number'] ?? '-' }}</td>
-                    <td>{{ $sk['date'] ?? '-' }}</td>
+                    <td>{{ $sk['date'] ? \Carbon\Carbon::parse($sk['date'])->locale('id')->translatedFormat('d F Y') : '-' }}</td>
+                    <td>{{ $sk['category']['name'] ?? '-' }}</td>
+                    <td>{{ $sk['description'] ?? '-' }}</td>
 {{--                    @if($sk['is_verified'])--}}
 {{--                        <td>--}}
 {{--                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">--}}
