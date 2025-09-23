@@ -15,7 +15,7 @@ class SkNumberController extends Controller
     public function index()
     {
         $skNumbers = SkNumber::orderBy('date', 'desc')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // Mengembalikan response sukses dengan data SkNumber yang sudah diurutkan
@@ -52,9 +52,8 @@ class SkNumberController extends Controller
             while (true) {
                 // Cek apakah ada data pada tanggal tersebut
                 $lastSkNumber = SkNumber::where('date', $dateNow)
-                    ->orderBy('created_at', 'desc')
+                    ->orderBy('created_at', 'desc')->orderBy('date', 'desc')
                     ->first();
-
                 if ($lastSkNumber) {
                     break;
                 }
@@ -67,7 +66,7 @@ class SkNumberController extends Controller
             preg_match('/^\d+/', $lastSkNumber->sk_number, $matches);
 
             if (!empty($matches)) {
-                $firstNumber = $matches[0];  // Ambil angka pertama (misalnya 2 atau 10)
+                $firstNumber = $matches[0];// Ambil angka pertama (misalnya 2 atau 10)
             } else {
                 return $this->errorResponse(
                     "SK number doesn't match the expected format",
@@ -98,7 +97,7 @@ class SkNumberController extends Controller
             while (true) {
                 // Cek apakah ada data pada tanggal tersebut
                 $lastSkNumber = SkNumber::where('date', $backDate)
-                    ->orderBy('created_at', 'asc')
+                    ->orderBy('created_at', 'desc')->orderBy('date', 'desc')
                     ->first();
 
                 if ($lastSkNumber) {
@@ -109,6 +108,16 @@ class SkNumberController extends Controller
                 $backDate->subDay();
             }
             $newSkFormat = $this->addLetterToSkNumber($lastSkNumber->sk_number);
+
+            //cek apakah nomor sk sudah ada atau belum
+            $isExist = SkNumber::where('sk_number', $newSkFormat)->exists();
+            if ($isExist) {
+                return $this->errorResponse(
+                    "Unable to generate SK number because the selected date has passed the allowed limit.",
+                    null,
+                    400
+                );
+            }
             $skNumber = new SkNumber();
             $skNumber->sk_number = $newSkFormat;
             $skNumber->date = Carbon::parse($request->date);
@@ -148,7 +157,41 @@ class SkNumberController extends Controller
         //
     }
 
-    public function addLetterToSkNumber($skNumber)
+    public function verifySkDate(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'sk_number' => 'required',
+        ]);
+
+        // Jika validasi gagal
+        if ($validator->fails()) {
+            return $this->errorResponse(
+                'Validation Error',
+                $validator->errors(),
+                422
+            );
+        }// Jika validasi gagal
+        $skNumber = SkNumber::where('sk_number',$request->sk_number)->first();
+        if ($skNumber) {
+            $skNumber->is_verified = true;
+            $skNumber->verified_at = Carbon::now();
+            $skNumber->save();
+            return $this->successResponse(
+                "SK number verified successfully",
+                $skNumber,
+                200
+            );
+        }
+        return $this->errorResponse(
+            "SK number doesn't match the selected sk number.",
+            null,
+            400
+        );
+
+    }
+
+    private function addLetterToSkNumber($skNumber)
     {
         // Pisahkan angka pertama dan bagian lainnya dari sk_number
         preg_match('/^(\d+)([A-Z]*)(\/KEP\/BSN\/\d+\/\d{4})/', $skNumber, $matches);
@@ -177,7 +220,7 @@ class SkNumberController extends Controller
         return null;
     }
 
-    public function getNextLetter($letters)
+    private function getNextLetter($letters)
     {
         // Jika huruf sudah ada, proses menjadi format basis 26
         $letterArray = str_split(strrev($letters)); // Membalik huruf untuk mempermudah perhitungan

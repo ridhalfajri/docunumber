@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SkNumberController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+Route::prefix('v1')->group(function () {
+    Route::put('sk_number/verified',[Sknumbercontroller::class,'verifySkDate'])->name('sk_number.verified');
+    Route::apiResource('sk_number',SkNumberController::class);
 });
