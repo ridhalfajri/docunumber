@@ -43,6 +43,24 @@ class SkNumberController extends Controller
                 422
             );
         }
+        //counter jika db belum ada isinya
+        $skCount = SkNumber::count();
+        if ($skCount === 0) {
+            $newSkFormat = '1/KEP/BSN/' . Carbon::now()->format('m') . '/' . Carbon::now()->format('Y');
+
+            $skNumber = new SkNumber();
+            $skNumber->sk_number = $newSkFormat;
+            $skNumber->date = Carbon::parse($request->date);
+            $skNumber->is_verified = false;
+            $skNumber->save();
+
+            return $this->successResponse(
+                "SK number created successfully (first record)",
+                $skNumber,
+                201,
+                now()->toDateTimeString()
+            );
+        }
         //validate tanggal request sekarang atau bukan
         if ($request->date == Carbon::now()->format('Y-m-d')) {
             $dateNow = Carbon::parse($request->date);
@@ -76,7 +94,13 @@ class SkNumberController extends Controller
 
             // Increment angka pertama dan buat format SK number baru
             $newFirstNumber = $firstNumber + 1;
-            $newSkFormat = $newFirstNumber . '/KEP/BSN/'.Carbon::now()->format('m').'/' . Carbon::now()->format('Y');
+            $parts = explode('/', $lastSkNumber->sk_number);
+            $year = end($parts);
+            if($year != Carbon::now()->format('Y')){
+                $newSkFormat ='1/KEP/BSN/'.Carbon::now()->format('m').'/' . Carbon::now()->format('Y');
+            }else{
+                $newSkFormat = $newFirstNumber . '/KEP/BSN/'.Carbon::now()->format('m').'/' . Carbon::now()->format('Y');
+            }
 
             // Buat SK number baru
             $skNumber = new SkNumber();
@@ -91,44 +115,54 @@ class SkNumberController extends Controller
                 201,
                 now()->toDateTimeString()
             );
-        }else{
+        }else {
             $backDate = Carbon::parse($request->date);
-            while (true) {
-                // Cek apakah ada data pada tanggal tersebut
-                $lastSkNumber = SkNumber::where('date', $backDate)
-                    ->orderBy('created_at', 'desc')->orderBy('date', 'desc')
-                    ->first();
 
-                if ($lastSkNumber) {
-                    break;
+            // Cari data sebelum atau sama dengan tanggal request
+            $lastSkNumber = SkNumber::where('date', '<=', $backDate)
+                ->orderBy('date', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if (!$lastSkNumber) {
+                // Tidak ada data sebelum tanggal request → mulai counter baru
+                $newSkFormat = '1/KEP/BSN/' . $backDate->format('m') . '/' . $backDate->format('Y');
+                $isExist = SkNumber::where('sk_number', $newSkFormat)->first();
+                if ($isExist) {
+                    return $this->errorResponse(
+                        "SK number already exist",
+                        null,
+                        400
+                    );
                 }
+            } else {
+                // Ada data sebelumnya → generate nomor dengan tambahan huruf
+                $newSkFormat = $this->addLetterToSkNumber($lastSkNumber->sk_number);
 
-                // Jika tidak ada data, mundur satu hari dan coba lagi
-                $backDate->subDay();
+                // Cek apakah nomor sudah ada
+                $isExist = SkNumber::where('sk_number', $newSkFormat)->exists();
+                if ($isExist) {
+                    return $this->errorResponse(
+                        "Unable to generate SK number because the selected date has passed the allowed limit.",
+                        null,
+                        400
+                    );
+                }
             }
-            $newSkFormat = $this->addLetterToSkNumber($lastSkNumber->sk_number);
 
-            //cek apakah nomor sk sudah ada atau belum
-            $isExist = SkNumber::where('sk_number', $newSkFormat)->exists();
-            if ($isExist) {
-                return $this->errorResponse(
-                    "Unable to generate SK number because the selected date has passed the allowed limit.",
-                    null,
-                    400
-                );
-            }
+            // Buat SK number baru
             $skNumber = new SkNumber();
             $skNumber->sk_number = $newSkFormat;
-            $skNumber->date = Carbon::parse($request->date);
+            $skNumber->date = $backDate;
             $skNumber->is_verified = false;
             $skNumber->save();
+
             return $this->successResponse(
                 "SK number created successfully",
                 $skNumber,
                 201,
                 now()->toDateTimeString()
             );
-
         }
     }
 

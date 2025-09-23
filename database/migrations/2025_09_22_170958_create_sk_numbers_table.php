@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('sk_number')->unique();
             $table->date('date');
             $table->boolean('is_verified')->default(false);
-            $table->timestamp('verified_at')->default(null);
+            $table->timestamp('verified_at')->nullable();
             $table->timestamps();
         });
     }
