@@ -25,3 +25,6 @@ Route::resource('sk_number', \App\Http\Controllers\SkNumberWebController::class)
     'update'  => 'sk.update',
     'destroy' => 'sk.destroy',
 ]);
+Route::get('/auth', function () {
+    return view('auth.login');
+});
