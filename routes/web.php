@@ -28,3 +28,5 @@ Route::resource('sk_number', \App\Http\Controllers\SkNumberWebController::class)
 Route::get('/auth', function () {
     return view('auth.login');
 });
+Route::post('/auth', [\App\Http\Controllers\AuthController::class, 'login'])->name('login');
+Route::post('/auth/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
