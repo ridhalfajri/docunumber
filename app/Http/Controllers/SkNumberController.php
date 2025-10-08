@@ -50,7 +50,7 @@ class SkNumberController extends Controller
         //counter jika db belum ada isinya
         $skCount = SkNumber::count();
         if ($skCount === 0) {
-            $newSkFormat = '1/KEP/BSN/' . Carbon::now()->format('m') . '/' . Carbon::now()->format('Y');
+            $newSkFormat = '1/KEP/BSN/' . Carbon::now()->format('n') . '/' . Carbon::now()->format('Y');
             if($request->is_sispk){
                 $category = Category::where('code','LAIN-LAIN')->first();
                 $categoryId = $category->id;
@@ -108,9 +108,9 @@ class SkNumberController extends Controller
             $parts = explode('/', $lastSkNumber->sk_number);
             $year = end($parts);
             if($year != Carbon::now()->format('Y')){
-                $newSkFormat ='1/KEP/BSN/'.Carbon::now()->format('m').'/' . Carbon::now()->format('Y');
+                $newSkFormat ='1/KEP/BSN/'.Carbon::now()->format('n').'/' . Carbon::now()->format('Y');
             }else{
-                $newSkFormat = $newFirstNumber . '/KEP/BSN/'.Carbon::now()->format('m').'/' . Carbon::now()->format('Y');
+                $newSkFormat = $newFirstNumber . '/KEP/BSN/'.Carbon::now()->format('n').'/' . Carbon::now()->format('Y');
             }
             $isExist = SkNumber::where('sk_number', $newSkFormat)->first();
             if ($isExist) {
