@@ -36,7 +36,7 @@
 {{--                    @endif--}}
 {{--                    <td>{{ $sk['verified_at'] ?? '-' }}</td>--}}
                     <td>
-                        <a href="{{route('sk.show',$sk['id'])}}" class="btn btn-sm btn-outline-info">Edit</a>
+                        <a href="{{route('sk.edit',$sk['id'])}}" class="btn btn-sm btn-outline-info">Edit</a>
                     </td>
                 </tr>
             @empty

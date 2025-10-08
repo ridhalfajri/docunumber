@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\SkNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class SkNumberWebController extends Controller
 {
@@ -65,17 +67,31 @@ class SkNumberWebController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(SkNumber $skNumber)
     {
-        //
+        $categories = Category::all();
+        return view('sknumber.edit',compact('categories','skNumber'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SkNumber  $skNumber)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'exists:categories,id',
+            'description'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+        $skNumber->category_id = $request->category_id;
+        $skNumber->description = $request->description;
+        $skNumber->save();
+        return redirect()->route('sk.index')->with('success', 'Berhasil mengubah data');
+
     }
 
     /**
