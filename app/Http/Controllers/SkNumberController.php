@@ -104,7 +104,7 @@ class SkNumberController extends Controller
             }
 
             // Increment angka pertama dan buat format SK number baru
-            $newFirstNumber = $firstNumber + 1;
+            $newFirstNumber = (int)$firstNumber + 1;
             $parts = explode('/', $lastSkNumber->sk_number);
             $year = end($parts);
             if($year != Carbon::now()->format('Y')){
@@ -139,7 +139,6 @@ class SkNumberController extends Controller
             $skNumber->date = Carbon::parse($request->date);
             $skNumber->category_id = $categoryId;
             $skNumber->description = $request->description;
-            $skNumber->category_id = $categoryId;
             $skNumber->is_verified = false;
             $skNumber->save();
 
@@ -160,7 +159,7 @@ class SkNumberController extends Controller
 
             if (!$lastSkNumber) {
                 // Tidak ada data sebelum tanggal request → mulai counter baru
-                $newSkFormat = '1/KEP/BSN/' . $backDate->format('m') . '/' . $backDate->format('Y');
+                $newSkFormat = '1/KEP/BSN/' . $backDate->format('n') . '/' . $backDate->format('Y');
                 $isExist = SkNumber::where('sk_number', $newSkFormat)->first();
                 if ($isExist) {
                     return $this->errorResponse(
