@@ -33,7 +33,7 @@ class SkNumberController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'date' => 'required|date|date_format:Y-m-d',
+            'date' => 'required|date|date_format:Y-m-d|before_or_equal:today',
             'is_sispk'    => 'required|boolean',
             'category_id' => 'required_if:is_sispk,0|nullable|exists:categories,id',
             'description'=>'required',
