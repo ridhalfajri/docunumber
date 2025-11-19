@@ -23,7 +23,6 @@ class AuthController extends Controller
 
         // 1) Cek user lokal dulu (khususnya admin dengan role = 1)
         $user = User::where('username', $request->username)->first();
-
         if ($user && intval($user->role) === 1) {
             // admiafarin langsung aktif (abaikan status)
             if (Hash::check($request->password, $user->password)) {
@@ -57,10 +56,11 @@ class AuthController extends Controller
                     $userLocal = User::updateOrCreate(
                         ['username' => $data['success']['username']],
                         [
-                            'name' => $data['success']['username'],
+                            'username' => $data['success']['username'],
+                            'name' => $this->usernameToName($data['success']['username']),
                             'password' => Hash::make($request->password),
                             'role' => $data['success']['role'] ?? 3,
-                            'status' => 0, // default belum aktif
+                            'status' => 1,
                         ]
                     );
 
@@ -70,16 +70,11 @@ class AuthController extends Controller
                             'username' => 'Akun Anda belum diaktifkan oleh admin.',
                         ]);
                     }
+                    // LOGIN ke Laravel
+                    auth()->login($userLocal);
 
-                    // simpan session
-                    session([
-                        'user' => [
-                            'id' => $userLocal->id,
-                            'username' => $userLocal->username,
-                            'role' => $userLocal->role,
-                        ],
-                        'token' => $data['success']['token'] ?? null,
-                    ]);
+                    // Optional: simpan token eksternal ke session kamu
+                    session(['token' => $data['success']['token'] ?? null]);
 
                     return redirect()->route('sk.index');
                 }
@@ -98,9 +93,21 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        auth()->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+    private function usernameToName($username)
+    {
+        // ganti titik & underscore jadi spasi
+        $name = str_replace(['.', '_'], ' ', $username);
+
+        // trim & hilangkan spasi dobel
+        $name = preg_replace('/\s+/', ' ', $name);
+
+        // kapital setiap kata
+        return ucwords($name);
     }
 }

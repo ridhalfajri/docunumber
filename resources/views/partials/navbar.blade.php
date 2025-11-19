@@ -4,8 +4,9 @@
             <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
             <span class="hide-menu">Home</span>
         </li>
-        <li class="sidebar-item">
-            <a class="sidebar-link" href="{{route('sk.index')}}" aria-expanded="false">
+        <li class="sidebar-item {{ request()->is('sk_number*') ? 'active' : '' }}">
+            <a class="sidebar-link {{ request()->is('sk_number*') ? 'active' : '' }}"
+               href="{{ route('sk.index') }}" aria-expanded="false">
                 <i class="ti ti-atom"></i>
                 <span class="hide-menu">Nomor SK</span>
             </a>

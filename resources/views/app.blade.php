@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Document Number SK</title>
-    <link rel="shortcut icon" type="image/png" href="{{asset('assets/images/logos/favicon.png')}}" />
+    <link rel="shortcut icon" type="image/png" href="{{asset('assets/images/logos/LogoBSN.png')}}" />
     <link rel="stylesheet" href="{{asset('assets/css/styles.min.css')}}" />
     @stack('style')
 </head>
@@ -19,7 +19,7 @@
     <div class="app-topstrip bg-dark py-6 px-3 w-100 d-lg-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center justify-content-center gap-5 mb-2 mb-lg-0">
             <a class="d-flex justify-content-center" href="#">
-                <img src="{{asset('assets/images/logos/logo-wrappixel.svg')}}" alt="" width="150">
+                <img src="{{asset('assets/images/logos/LogoBSN.png')}}" alt="" width="90">
             </a>
 
 
@@ -30,9 +30,6 @@
         <!-- Sidebar scroll-->
         <div>
             <div class="brand-logo d-flex align-items-center justify-content-between">
-                <a href="./index.html" class="text-nowrap logo-img">
-                    <img src="{{asset('assets/images/logos/logo.svg')}}" alt="" />
-                </a>
                 <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                     <i class="ti ti-x fs-6"></i>
                 </div>
@@ -66,7 +63,14 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                 <div class="message-body">
-                                    <a href="./authentication-login.html" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                                    <p class="fw-bold">{{ auth()->user()->name }}</p>
+                                    <form action="{{ route('logout') }}" method="POST" class="mx-3 mt-2 d-block">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-primary w-100">
+                                            Logout
+                                        </button>
+                                    </form>
+
                                 </div>
                             </div>
                         </li>

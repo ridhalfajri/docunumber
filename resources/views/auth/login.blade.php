@@ -68,11 +68,11 @@
             @csrf
             <div class="mb-3">
                 <label class="form-label">Username</label>
-                <input type="text" name="username" class="form-control" required>
+                <input type="text" name="username" value="rizky.mulya" class="form-control" required>
             </div>
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
+                <input type="password" name="password" value="BSNsni2026" class="form-control" required>
             </div>
 
             @if ($errors->any())
