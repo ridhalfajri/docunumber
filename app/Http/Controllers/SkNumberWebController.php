@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SkExport;
 use App\Models\Category;
 use App\Models\SkNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SkNumberWebController extends Controller
 {
@@ -100,5 +102,11 @@ class SkNumberWebController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function excel()
+    {
+        $data = SkNumber::all();
+        return Excel::download(new SkExport($data), 'data_sk.xlsx');
     }
 }

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('app');
 });
+Route::get('sk_number/excel',[\App\Http\Controllers\SkNumberWebController::class,'excel'])->name('sk.excel');
 Route::resource('sk_number', \App\Http\Controllers\SkNumberWebController::class)->names([
     'index'   => 'sk.index',
     'create'  => 'sk.create',

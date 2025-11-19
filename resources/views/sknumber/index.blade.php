@@ -1,6 +1,7 @@
 @extends('app')
 @section('content')
     <a href="{{route('sk.create')}}" class="btn btn-outline-primary">Generate No SK</a>
+    <a href="{{route('sk.excel')}}" class="btn btn-outline-primary">Excel</a>
     <table class="table table-striped">
         <thead>
         <tr>
